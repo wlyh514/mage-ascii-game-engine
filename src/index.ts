@@ -19,16 +19,18 @@ const player = new Tile({
   char: '@',
   color: new Color(255, 0, 0),
   isVisible: true,
-  pos: new Vector(10, 10)
+  pos: new Vector(0, 0)
 });
 
 const backgroundTiles = Array.from({ length: WIDTH*HEIGHT }, (_, i) => {
-  const x = i % WIDTH;1
+  const x = i % WIDTH;
   const y = Math.floor(i / WIDTH);
 
   return new Tile({
     char: '.',
-    pos: new Vector(x, y)
+    pos: new Vector(x, y),
+    background: new Color(0, 0, 0, 1),
+    color: new Color(255, 255, 255, 1)
   });
 });
 
@@ -38,9 +40,18 @@ const domRenderer: Renderer = new DOMRenderer();
 const canvasRenderer: Renderer = new CanvasRenderer(); 
 const beforeDraw = () => {
   layers.background.operations.forEach(op => {
-    const newAlpha = (Math.sin((renderer.frames / 10) + (op.pos.x / op.pos.y)) + 1) / 2;
+    let newAlpha; 
+    newAlpha = (Math.sin((renderer.frames / 10) + (op.pos.x / op.pos.y)) + 1) / 2;
+    op.color.b = newAlpha; 
+    op.color.r = newAlpha; 
     op.color.a = newAlpha;
-  })}; 
+  })
+
+  layers.actor.operations.forEach(op => {
+    // op.char = String.fromCharCode((renderer.frames % 100) + 25);
+     
+  })
+}; 
 
 domRenderer.setSize(35);
 domRenderer.addLayer('background', layers.background);
@@ -53,7 +64,7 @@ canvasRenderer.addLayer('actor', layers.actor);
 canvasRenderer.onBeforeDraw(beforeDraw); 
 
 
-renderer = domRenderer; 
+renderer = canvasRenderer; 
 
 let fps = 0;
 setInterval(() => {
@@ -70,16 +81,20 @@ const draw = () => {
 }
 
 draw();
-let ascEngineCanvas: HTMLElement = document.getElementById('asc-engine-canvas'); 
+let ascEngineCanvases: HTMLCollectionOf<HTMLCanvasElement> = document.getElementsByTagName('canvas'); 
 let ascEngineRendererSelect: HTMLElement = document.getElementById('asc-engine-renderer-name'); 
 ascEngineRendererSelect.addEventListener('click', _ => {
   if (renderer instanceof DOMRenderer) {
-    ascEngineCanvas.style.display = 'block'; 
+    for (const canvas of Array.from(ascEngineCanvases)) {
+      canvas.style.display = 'block'; 
+    }
     ascEngineRendererSelect.textContent = 'Canvas Renderer'; 
     renderer = canvasRenderer; 
   }
   else {
-    ascEngineCanvas.style.display = 'none'; 
+    for (const canvas of Array.from(ascEngineCanvases)) {
+      canvas.style.display = 'none'; 
+    }
     ascEngineRendererSelect.textContent = 'DOM Renderer'; 
     renderer = domRenderer; 
   }
@@ -104,4 +119,8 @@ document.addEventListener('keydown', e => {
       break;
     }
   }
+})
+
+document.addEventListener('click', _ => {
+  // draw(); 
 })

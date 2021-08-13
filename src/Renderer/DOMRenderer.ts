@@ -2,6 +2,7 @@ import Renderer from "./Renderer";
 import Layer from "../Layer";
 
 export default class DOMRenderer extends Renderer{
+    private layerElements: Record<string, HTMLElement> = {};
     commit() {
       this.beforeDraw();
   

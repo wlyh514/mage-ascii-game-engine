@@ -2,7 +2,7 @@ import Color from "./Color";
 import Tile from "./Tile";
 import Vector from "./Vector";
 
-interface DrawingOperation {
+export interface DrawingOperation {
   tile: Tile;
   char: string;
   color: Color;

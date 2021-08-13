@@ -35,5 +35,13 @@ export default class Color {
   clone() {
     return new Color(this._r, this._g, this._b, this._a);
   }
+
+  equals(c: Color): boolean {
+    return this.r === c.r && this.g === c.g && this.b === c.b && this.a === c.a; 
+  }
+
+  static Transparent(): Color {
+    return new Color(0, 0, 0, 0); 
+  }
 };
 

@@ -6,7 +6,6 @@ import Layer from "../Layer";
 export default abstract class Renderer {
   protected namedLayers: Record<string, Layer> = {};
   protected layers: Array<Layer> = [];
-  protected layerElements: Record<string, HTMLElement> = {};
   protected size: number = 30;
   protected beforeDraw: () => void = () => {};
   frames: number = 0; 

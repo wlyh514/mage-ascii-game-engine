@@ -23,6 +23,10 @@ export default class Vector {
     return new Vector(this.x, this.y);
   }
 
+  equals(v: Vector): boolean {
+    return this.x === v.x && this.y === v.y; 
+  }
+
   static add(v1:Vector, v2:Vector) {
     return v1.clone().add(v2);
   }
@@ -33,5 +37,9 @@ export default class Vector {
 
   static Zero() {
     return new Vector(0, 0);
+  }
+
+  static equals(v1: Vector, v2: Vector): boolean {
+    return v1.equals(v2); 
   }
 }
