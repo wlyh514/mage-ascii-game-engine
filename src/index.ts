@@ -1,10 +1,10 @@
-import Color from "./Color";
-import Layer from "./Layer";
-import Renderer from "./Renderer/Renderer";
-import DOMRenderer from "./Renderer/DOMRenderer";
-import Tile from "./Tile";
-import Vector from "./Vector";
-import CanvasRenderer from "./Renderer/CanvasRenderer";
+import Color from "./mage-ascii-engine/Color";
+import Layer from "./mage-ascii-engine/Layer";
+import Renderer from "./mage-ascii-engine/Renderer/Renderer";
+import DOMRenderer from "./mage-ascii-engine/Renderer/DOMRenderer";
+import Tile from "./mage-ascii-engine/Tile";
+import Vector from "./mage-ascii-engine/Vector";
+import CanvasRenderer from "./mage-ascii-engine/Renderer/CanvasRenderer";
 
 const WIDTH = 80;
 const HEIGHT = 24;
