@@ -3,6 +3,8 @@ import Layer, { DrawingOperation } from "../Layer";
 import Vector from "../Vector";
 import Color from "../Color";
 
+const charWidth = 0.6; 
+
 export default class CanvasRenderer extends Renderer {
 
     private layerCanvases: Record<string, HTMLCanvasElement>; 
@@ -28,7 +30,7 @@ export default class CanvasRenderer extends Renderer {
         canvas.setAttribute('id', `asc-engine-canvas-${name}`); 
         canvas.width = layer.size.x * this.size;
         canvas.height = layer.size.y * this.size; 
-        canvas.style.left = `${layer.pos.x * this.size}px`; 
+        canvas.style.left = `${layer.pos.x * this.size * charWidth}px`; 
         canvas.style.top = `${layer.pos.y * this.size}px`; 
         canvas.style.zIndex = (layer.z + 10).toString(); 
         
@@ -46,11 +48,21 @@ export default class CanvasRenderer extends Renderer {
     commit(): void {
         this.beforeDraw(); 
         for (let [name, layer] of Object.entries(this.namedLayers)) {
+            
+            let context: CanvasRenderingContext2D = this.layerContexes[name]; 
+            let canvas: HTMLCanvasElement = this.layerCanvases[name]; 
+
+            if (!layer.isVisible) {
+                canvas.style.display = 'none'; 
+            }
+            else {
+                canvas.style.display = 'block'; 
+            }
+
+            canvas.style.opacity = layer.opacity.toString(); 
             if (!layer.isVisible || layer.opacity === 0) {
                 continue; 
             }
-            let context: CanvasRenderingContext2D = this.layerContexes[name]; 
-
             for (const op of layer.operations) {
                 
                 let gridElement: CanvasGridElement; 
@@ -78,21 +90,21 @@ export default class CanvasRenderer extends Renderer {
         if (op === null) {
             return; 
         }
-        let pixelPos = new Vector(op.pos.x * this.size / 2, op.pos.y * this.size); 
+        let pixelPos = new Vector(op.pos.x * this.size * charWidth, op.pos.y * this.size); 
         if (op.background !== undefined) {
             // Fill background
             if (op.background.equals(Color.Transparent())) {
-                ctx.clearRect(pixelPos.x, pixelPos.y, this.size, this.size); 
+                ctx.clearRect(pixelPos.x, pixelPos.y, this.size * charWidth, this.size); 
             }
             else {
                 ctx.fillStyle = op.background.toCssString(); 
-                ctx.fillRect(pixelPos.x, pixelPos.y, this.size, this.size);
+                ctx.fillRect(pixelPos.x, pixelPos.y, this.size * charWidth, this.size);
             }
         }
         if (op.char !== undefined) {
             ctx.font = `${this.size}px 'Inconsolata', Courier, monospace`; 
             ctx.fillStyle = op.color.toCssString(); 
-            ctx.fillText(op.char, pixelPos.x, pixelPos.y + this.size - 2); 
+            ctx.fillText(op.char, pixelPos.x, pixelPos.y + this.size - 4); 
         }
     }
 }
@@ -171,13 +183,18 @@ class CanvasGridElement {
 
         if (this.previousOp.pos.equals(this.currentOp.pos)) {
             // Two operations are in the same grid
-            if (this.previousOp.background.equals(this.currentOp.background)) {
+            if (this.previousOp.background.equals(this.currentOp.background) && this.currentOp.background.a === 1) {
                 // Two operations has the same backgroud
                 if (this.previousOp.char !== this.currentOp.char) {
                     factory.drawChar(this.previousOp.char, this.previousOp.background);
                 }
                 // The only difference being the color
+                
             }
+            else {
+                factory.drawBackground(transparent); 
+            }
+            
         }
         else {
             factory.drawBackground(transparent); 

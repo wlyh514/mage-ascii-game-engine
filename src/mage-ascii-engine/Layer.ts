@@ -1,3 +1,4 @@
+import { TileTexture } from "./Tile";
 import Color from "./Color";
 import Tile from "./Tile";
 import Vector from "./Vector";
@@ -53,5 +54,46 @@ export default class Layer {
 
   clear() {
     this.operations = [];
+  }
+}
+
+/**
+ * A layer with tiles binded to itself. No more tiles can be added from outside. 
+ */
+export class BitmapLayer extends Layer {
+  tiles: Array<Tile>; 
+
+  constructor(options: LayerConstructorOptions) {
+    super(options); 
+    this.tiles = Array.from({length: this.size.x * this.size.y}, (_, i) => {
+      return new Tile({
+        char: ' ',
+        color: new Color(255, 255, 255, 1), 
+        background: Color.Transparent(), 
+        isVisible: true, 
+        pos: new Vector(i % this.size.x, Math.floor(i / this.size.x))
+      }); 
+    }); 
+  }
+
+  /**
+   * Add all tiles to the layer's operations array
+   */
+  draw() {
+    for (const tile of this.tiles) {
+      this.operations.push(drawingOperation(tile)); 
+    }
+  }
+
+  /**
+   * Add only one tile to the layer's operations array
+   * @param indx index of the tile to be drew
+   */
+  drawOne(indx: number) {
+    this.operations.push(drawingOperation(this.tiles[indx])); 
+  }
+
+  setTile(indx: number, texture: TileTexture) {
+    this.tiles[indx].overloadFromTexture(texture); 
   }
 }
